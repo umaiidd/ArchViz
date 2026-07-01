@@ -124,7 +124,7 @@ export default function Apartment3D() {
 
   return (
     <div
-      className={`relative flex h-full w-full items-center justify-center overflow-hidden bg-black select-none ${
+      className={`relative flex h-full w-full touch-none items-center justify-center overflow-hidden bg-black select-none ${
         isDragging
           ? "cursor-grabbing"
           : "cursor-grab"
@@ -179,7 +179,7 @@ export default function Apartment3D() {
       }}
     >
       {/* Time Switcher */}
-      <div className="absolute right-4 top-4 z-20 flex gap-2">
+      <div className="absolute right-2 top-2 z-20 flex gap-1 sm:right-4 sm:top-4 sm:gap-2">
         {(
           ["day", "noon", "dusk", "night"] as TimeOfDay[]
         ).map((time) => (
@@ -188,7 +188,7 @@ export default function Apartment3D() {
             onClick={() =>
               setTimeOfDay(time)
             }
-            className={`rounded-xl px-5 py-2 text-sm font-semibold shadow-lg transition-all duration-300 ${
+            className={`rounded-xl px-2.5 py-1.5 text-xs font-semibold shadow-lg transition-all duration-300 sm:px-5 sm:py-2 sm:text-sm ${
               time === timeOfDay
                 ? "bg-white text-black"
                 : "bg-black/70 text-white hover:bg-black"

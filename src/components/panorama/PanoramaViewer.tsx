@@ -64,7 +64,7 @@ export default function PanoramaViewer() {
   };
 
   return (
-    <div className="relative h-full w-full bg-black">
+    <div className="relative h-full w-full touch-none select-none bg-black">
       <Canvas
         camera={{
           position: [0, 0, 0.1],
@@ -124,7 +124,7 @@ export default function PanoramaViewer() {
               balconyMode === "day" ? "night" : "day"
             )
           }
-          className="absolute right-4 top-4 rounded-lg bg-black/70 px-4 py-2 text-white transition hover:bg-black/90"
+          className="absolute right-2 top-2 rounded-lg bg-black/70 px-3 py-1.5 text-sm text-white transition hover:bg-black/90 sm:right-4 sm:top-4 sm:px-4 sm:py-2 sm:text-base"
         >
           {balconyMode === "day"
             ? "☀️ Day"
@@ -134,20 +134,20 @@ export default function PanoramaViewer() {
 
       {/* Balcony Day / Night Prompt */}
       {showBalconyPrompt && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60">
-          <div className="flex flex-col items-center gap-4 rounded-2xl bg-black/80 p-8 text-white">
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 p-4">
+          <div className="flex w-full max-w-xs flex-col items-center gap-4 rounded-2xl bg-black/80 p-6 text-white sm:max-w-none sm:p-8">
             <p className="text-lg font-semibold">
               View Balcony
             </p>
 
-            <div className="flex gap-4">
+            <div className="flex w-full gap-4 sm:w-auto">
               <button
                 onClick={() => {
                   setBalconyMode("day");
                   setShowBalconyPrompt(false);
                   changeScene("balcony");
                 }}
-                className="rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-neutral-200"
+                className="flex-1 rounded-xl bg-white px-4 py-3 font-semibold text-black transition hover:bg-neutral-200 sm:flex-none sm:px-6"
               >
                 ☀️ Day
               </button>
@@ -158,7 +158,7 @@ export default function PanoramaViewer() {
                   setShowBalconyPrompt(false);
                   changeScene("balcony");
                 }}
-                className="rounded-xl bg-neutral-800 px-6 py-3 font-semibold text-white transition hover:bg-neutral-700"
+                className="flex-1 rounded-xl bg-neutral-800 px-4 py-3 font-semibold text-white transition hover:bg-neutral-700 sm:flex-none sm:px-6"
               >
                 🌙 Night
               </button>

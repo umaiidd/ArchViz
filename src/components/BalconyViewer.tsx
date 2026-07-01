@@ -19,7 +19,7 @@ export default function BalconyViewer() {
   const image = mode === "day" ? BALCONY_DAY : BALCONY_NIGHT;
 
   return (
-    <div className="relative h-full w-full bg-black">
+    <div className="relative h-full w-full touch-none select-none bg-black">
       <Canvas
         camera={{
           position: [0, 0, 0.1],
@@ -36,7 +36,7 @@ export default function BalconyViewer() {
         onClick={() =>
           setMode(mode === "day" ? "night" : "day")
         }
-        className="absolute right-4 top-4 rounded-lg bg-black/70 px-4 py-2 text-white transition hover:bg-black/90"
+        className="absolute right-2 top-2 rounded-lg bg-black/70 px-3 py-1.5 text-sm text-white transition hover:bg-black/90 sm:right-4 sm:top-4 sm:px-4 sm:py-2 sm:text-base"
       >
         {mode === "day" ? "☀️ Day" : "🌙 Night"}
       </button>

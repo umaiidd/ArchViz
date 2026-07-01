@@ -24,15 +24,26 @@ function directionForHeading(heading: number) {
   return COMPASS_DIRECTIONS[index];
 }
 
+function wrapPosition(position: number) {
+  return (
+    ((position % ROOM3D_TOTAL_FRAMES) +
+      ROOM3D_TOTAL_FRAMES) %
+    ROOM3D_TOTAL_FRAMES
+  );
+}
+
 export default function Room3DViewer() {
   const [frame, setFrame] = useState(0);
+  const [blend, setBlend] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
   const dragging = useRef(false);
 
   const startX = useRef(0);
-  const lastFrame = useRef(0);
+  const lastPosition = useRef(0);
+
+  const position = useRef(0);
 
   const lastX = useRef(0);
   const lastTime = useRef(0);
@@ -41,6 +52,15 @@ export default function Room3DViewer() {
   const animationRef = useRef<number | undefined>(
     undefined
   );
+
+  const applyPosition = (nextPosition: number) => {
+    const wrapped = wrapPosition(nextPosition);
+
+    position.current = wrapped;
+
+    setFrame(Math.floor(wrapped));
+    setBlend(wrapped - Math.floor(wrapped));
+  };
 
   useEffect(() => {
     let loadedImages = 0;
@@ -80,16 +100,7 @@ export default function Room3DViewer() {
 
     const delta = clientX - startX.current;
 
-    let nextFrame =
-      lastFrame.current +
-      Math.floor(delta / sensitivity);
-
-    nextFrame =
-      ((nextFrame % ROOM3D_TOTAL_FRAMES) +
-        ROOM3D_TOTAL_FRAMES) %
-      ROOM3D_TOTAL_FRAMES;
-
-    setFrame(nextFrame);
+    applyPosition(lastPosition.current + delta / sensitivity);
   };
 
   useEffect(() => {
@@ -98,16 +109,7 @@ export default function Room3DViewer() {
         !dragging.current &&
         Math.abs(velocity.current) > 0.01
       ) {
-        setFrame((prev) => {
-          let next = prev + velocity.current;
-
-          next =
-            ((next % ROOM3D_TOTAL_FRAMES) +
-              ROOM3D_TOTAL_FRAMES) %
-            ROOM3D_TOTAL_FRAMES;
-
-          return Math.round(next);
-        });
+        applyPosition(position.current + velocity.current);
 
         velocity.current *= 0.92;
       }
@@ -130,7 +132,7 @@ export default function Room3DViewer() {
 
   return (
     <div
-      className={`relative flex h-full w-full items-center justify-center overflow-hidden bg-black select-none ${
+      className={`relative flex h-full w-full touch-none items-center justify-center overflow-hidden bg-black select-none ${
         isDragging ? "cursor-grabbing" : "cursor-grab"
       }`}
       onMouseDown={(e) => {
@@ -140,7 +142,7 @@ export default function Room3DViewer() {
         velocity.current = 0;
 
         startX.current = e.clientX;
-        lastFrame.current = frame;
+        lastPosition.current = position.current;
 
         lastX.current = e.clientX;
         lastTime.current = performance.now();
@@ -161,7 +163,7 @@ export default function Room3DViewer() {
         velocity.current = 0;
 
         startX.current = e.touches[0].clientX;
-        lastFrame.current = frame;
+        lastPosition.current = position.current;
 
         lastX.current = e.touches[0].clientX;
         lastTime.current = performance.now();
@@ -173,13 +175,13 @@ export default function Room3DViewer() {
       }}
     >
       {/* Compass Dial */}
-      <div className="absolute top-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-6 rounded-full bg-black/70 px-6 py-2 text-sm font-semibold tracking-widest text-white">
+      <div className="absolute top-2 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 rounded-full bg-black/70 px-4 py-1.5 text-xs font-semibold tracking-widest text-white sm:top-4 sm:gap-6 sm:px-6 sm:py-2 sm:text-sm">
         <span className="text-neutral-400">
           {directionForHeading(
             (heading - 45 + 360) % 360
           )}
         </span>
-        <span className="text-base text-white">
+        <span className="text-sm text-white sm:text-base">
           {directionForHeading(heading)}
         </span>
         <span className="text-neutral-400">
@@ -198,14 +200,32 @@ export default function Room3DViewer() {
       )}
 
       {/* Room */}
-      <img
-        src={room3dFrames[frame]}
-        draggable={false}
-        alt="3D Room"
-        className={`max-h-full max-w-full object-contain transition-opacity duration-200 ${
+      <div
+        className={`relative h-full w-full transition-opacity duration-200 ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
-      />
+      >
+        <img
+          src={room3dFrames[frame]}
+          draggable={false}
+          alt="3D Room"
+          className="absolute inset-0 h-full w-full object-contain"
+          style={{ opacity: 1 - blend }}
+        />
+
+        <img
+          src={
+            room3dFrames[
+              (frame + 1) % ROOM3D_TOTAL_FRAMES
+            ]
+          }
+          draggable={false}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-contain"
+          style={{ opacity: blend }}
+        />
+      </div>
 
       <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/70 px-4 py-2 text-sm text-white">
         Drag to rotate
