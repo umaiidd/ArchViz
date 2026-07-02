@@ -10,7 +10,7 @@ export default function Home() {
   const [view, setView] = useState<ViewType>("3d");
 
   return (
-    <main className="flex h-screen w-screen flex-col-reverse overflow-hidden bg-neutral-900 md:flex-row">
+    <main className="flex h-dvh w-screen flex-col-reverse overflow-hidden bg-neutral-900 md:flex-row">
       <Sidebar view={view} setView={setView} />
       <Viewer view={view} />
     </main>
